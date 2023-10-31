@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
-import { CreateUserDto } from './dtos/user.dto';
+import { CreateUserDTO } from './dtos/user.dto';
 
 @Injectable()
 export class AppService {
@@ -17,16 +17,20 @@ export class AppService {
     ];
   }
 
-  getUsers(): User[] {
+  findUsers(): User[] {
     return this.users;
   }
 
-  getUserByNick(nick: string): User | undefined {
+  findUserByNick(nick: string): User | undefined {
     return this.users.find(u => u.nick === nick);
   }
 
-  postUser(body: CreateUserDto): void {
+  signUp(body: CreateUserDTO): void {
     const { nick, name, email, password } = body;
+
+    if (this.users.some(u => u.nick === nick)) {
+      throw new HttpException('User already exists', HttpStatus.CONFLICT);
+    }
     this.users.push(new User(nick, name, email, password));
   }
 }
