@@ -6,5 +6,7 @@ export class User {
     private _password: string
   ) { };
 
-  get nick(): string { return this._nick };
+  get nick(): string {
+    return this._nick
+  };
 }
