@@ -10,7 +10,7 @@ import {
 } from "class-validator";
 
 
-export class CreateUserDto {
+export class CreateUserDTO {
   @IsString()
   @IsNotEmpty()
   @IsUppercase()
