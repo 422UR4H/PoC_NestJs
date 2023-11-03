@@ -1,37 +1,30 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDTO } from 'src/dtos/user.dto';
-import { User } from 'src/entities/user.entity';
+import { User } from '@prisma/client';
+import { CreateUserDto } from './dtos/user.dto';
+import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
-  private users: User[];
+  constructor(private readonly usersRepository: UsersRepository) { }
 
-  constructor() {
-    this.users = [
-      new User('AZZURAH', 'Azzurah', 'azzurah@mail.com', '123'),
-      new User('SARAH', 'Sarah', 'sarah@mail.com', '123')
-    ];
+  async findUsers(): Promise<User[]> {
+    const users = await this.usersRepository.findUsers();
+    return users;
   }
 
-  findUsers(): User[] {
-    return this.users;
-  }
-
-  findUserByNick(nick: string): User {
-    const user = this.users.find(u => u.nick === nick);
-
+  async findUserByNick(nick: string): Promise<User> {
+    const user = await this.usersRepository.findUserByNick(nick);
     if (user == null) {
       throw new HttpException("User not found", HttpStatus.NOT_FOUND);
     }
     return user;
   }
 
-  signUp(body: CreateUserDTO): void {
-    const { nick, name, email, password } = body;
-
-    if (this.users.some(u => u.nick === nick)) {
+  async signUp(body: CreateUserDto): Promise<void> {
+    const user = await this.usersRepository.findUserByNick(body.nick);
+    if (user != null) {
       throw new HttpException('User already exists', HttpStatus.CONFLICT);
     }
-    this.users.push(new User(nick, name, email, password));
+    await this.usersRepository.create(body as User);
   }
 }

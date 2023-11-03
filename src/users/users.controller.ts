@@ -1,30 +1,24 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { CreateUserDTO } from 'src/dtos/user.dto';
+import { CreateUserDto } from './dtos/user.dto';
 import { UsersService } from './users.service';
-import { User } from 'src/entities/user.entity';
+import { User } from '@prisma/client';
 
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) { };
+  constructor(private readonly usersService: UsersService) { };
 
-  @Get('users')
-  findUsers(): User[] {
+  @Get()
+  findUsers(): Promise<User[]> {
     return this.usersService.findUsers();
   }
 
-  @Get('users/:nick') // se fosse um id, usaríamos @Param('id', ParseIntPipe) id: number
-  findUserByNick(@Param('nick') nick: string) {
-    const user = this.usersService.findUserByNick(nick);
-    return this.formatUser(user);
+  @Get(':nick') // se fosse um id, usaríamos @Param('id', ParseIntPipe) id: number
+  findUserByNick(@Param('nick') nick: string): Promise<User> {
+    return this.usersService.findUserByNick(nick);
   }
 
-  @Post('sign-up')
-  signUp(@Body() body: CreateUserDTO): void {
+  @Post()
+  signUp(@Body() body: CreateUserDto): Promise<void> {
     return this.usersService.signUp(body);
-  }
-
-  private formatUser(user: User) {
-    const { nick, email, name, password } = user;
-    return { nick, email, name, password };
   }
 }
