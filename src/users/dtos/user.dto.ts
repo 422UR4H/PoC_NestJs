@@ -10,7 +10,7 @@ import {
 } from "class-validator";
 
 
-export class CreateUserDTO {
+export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @IsUppercase()
@@ -31,6 +31,6 @@ export class CreateUserDTO {
   email: string;
 
   @IsStrongPassword({ minLength: 8 })
-  @Max(32)
+  @MaxLength(32)
   password: string;
 }
