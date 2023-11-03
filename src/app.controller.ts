@@ -18,12 +18,18 @@ export class AppController {
   }
 
   @Get('users/:nick') // se fosse um id, usaríamos @Param('id', ParseIntPipe) id: number
-  findUserByNick(@Param('nick') nick: string): User | undefined {
-    return this.appService.findUserByNick(nick);
+  findUserByNick(@Param('nick') nick: string) {
+    const user = this.appService.findUserByNick(nick);
+    return this.formatUser(user);
   }
 
   @Post('sign-up')
   signUp(@Body() body: CreateUserDTO): void {
     return this.appService.signUp(body);
+  }
+
+  private formatUser(user: User) {
+    const { nick, email, name, password } = user;
+    return { nick, email, name, password };
   }
 }
