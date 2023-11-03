@@ -21,8 +21,13 @@ export class AppService {
     return this.users;
   }
 
-  findUserByNick(nick: string): User | undefined {
-    return this.users.find(u => u.nick === nick);
+  findUserByNick(nick: string): User {
+    const user = this.users.find(u => u.nick === nick);
+
+    if (user == null) {
+      throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+    }
+    return user;
   }
 
   signUp(body: CreateUserDTO): void {
